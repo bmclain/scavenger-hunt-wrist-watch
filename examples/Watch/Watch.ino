@@ -18,6 +18,7 @@ TIME DISPLAY MODE:
 
 #include <avr/sleep.h>
 #include <avr/power.h>
+#include <avr/pgmspace.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Watch.h>
@@ -48,6 +49,9 @@ uint8_t    mode      = MODE_SCAVENGER,
            mode_last = MODE_SCAVENGER;
 boolean    h24       = false; // 24-hour display mode
 uint16_t   fps       = 100;
+char       buttonHistory[8];
+uint8_t    numButtonPresses = 0;
+uint8_t    messageIndex = 0;
 
 void setup() {
   Wire.begin();
@@ -76,16 +80,22 @@ void loop() {
       mode_last = mode;
       mode      = MODE_SCAVENGER;
     }
+    numButtonPresses = 0;
   } else if(a == ACTION_HOLD_RIGHT) {
-    if(mode != MODE_SCAVENGER) {
-      // Switch to next display mode (w/wrap)
-      if(++mode >= N_MODES) mode = 1;
-    }
+    buttonHistory[numButtonPresses] = 'r';
+    numButtonPresses++;
   } else if(a == ACTION_HOLD_LEFT) {
-    if(mode != MODE_SCAVENGER) {
-      // Switch to prior display mode (w/wrap)
-      if(--mode < 1) mode = N_MODES - 1;
-    }
+    buttonHistory[numButtonPresses] = 'l';
+    numButtonPresses++;
+  }
+  if (strcmp(buttonHistory, "l") == 0) {
+    messageIndex = 1;
+  } else if (strcmp(buttonHistory, "r") == 0) {
+    messageIndex = 2;
+  } else if (strcmp(buttonHistory, "lrl") == 0) {
+    messageIndex = 3;
+  } else if (strcmp(buttonHistory, "rlr") == 0) {
+    messageIndex = 4;
   }
   (*modeFunc[mode])(a); // Action is passed to clock-drawing function
   watch.swapBuffers();

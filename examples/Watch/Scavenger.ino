@@ -13,7 +13,7 @@ const PROGMEM unsigned char letters[45][8] = {
   {},
   {},
   {},
-  {},
+  {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, //SPACE
   {},
   {},
   {0x8, 0x14, 0x22, 0x3E, 0x22, 0x22, 0x22, 0x22}, //A
@@ -51,17 +51,23 @@ void convertCharToBool(unsigned char c, bool b[8])
 }
 static int x = 0;
 static int frame = 0;
-const PROGMEM char string_0[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";   // "String 0" etc are strings to store - change to suit.
-const PROGMEM char string_1[] = "GARBAGE";
+const PROGMEM char string_0[] = "WELCOME";   // "String 0" etc are strings to store - change to suit.
+const PROGMEM char string_1[] = "1ST MESSAGE";
+const PROGMEM char string_2[] = "2ND MESSAGE";
+const PROGMEM char string_3[] = "3RD MESSAGE";
+const PROGMEM char string_4[] = "4TH MESSAGE";
 PGM_P const string_table[] PROGMEM =
 {   
   string_0,
-  string_1
+  string_1,
+  string_2,
+  string_3,
+  string_4
 };
 
 void mode_scavenger(uint8_t action) {
   char message[36];
-  strcpy_P(message, (char*)pgm_read_word(&(string_table[0])));
+  strcpy_P(message, (char*)pgm_read_word(&(string_table[messageIndex])));
   int messageBits = strlen(message) * 8;
   int messageLen = strlen(message);
   if (action != ACTION_NONE) {
@@ -86,14 +92,16 @@ void mode_scavenger(uint8_t action) {
   bool marquee[16][8];
   bool letter[8];
   int counter = 0;
-  int shifterMin = ((int)(x / 8));
   int shifterMax = ((int)(x / 8));
   if (shifterMax < messageLen) {
     shifterMax++;
   }
-  for (int i = shifterMin; i <= shifterMax; i++) {
+  for (int i = ((int)(x / 8)); i <= shifterMax; i++) {
     for (int j = 0; j < 8; j++) {
       int index = ((int)message[i]) - 48;
+      if (index < 0) {
+        index = 16;
+      }
       convertCharToBool(pgm_read_word(&letters[index][j]), letter);
       for (int k = 0; k < 8; k++) {
         marquee[counter + k][j] = letter[7 - k];
