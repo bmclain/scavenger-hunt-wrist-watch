@@ -51,7 +51,7 @@ void convertCharToBool(unsigned char c, bool b[8])
 }
 static int x = 0;
 static int frame = 0;
-const PROGMEM char string_0[] = "ABCDEFGHIJKLMN";   // "String 0" etc are strings to store - change to suit.
+const PROGMEM char string_0[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";   // "String 0" etc are strings to store - change to suit.
 const PROGMEM char string_1[] = "GARBAGE";
 PGM_P const string_table[] PROGMEM =
 {   
@@ -60,7 +60,7 @@ PGM_P const string_table[] PROGMEM =
 };
 
 void mode_scavenger(uint8_t action) {
-  char message[14];
+  char message[36];
   strcpy_P(message, (char*)pgm_read_word(&(string_table[0])));
   int messageBits = strlen(message) * 8;
   int messageLen = strlen(message);
@@ -83,10 +83,15 @@ void mode_scavenger(uint8_t action) {
     watch.setTimeout(messageBits * 9);
   }
   watch.fillScreen(0);
-  bool marquee[messageBits][8];
+  bool marquee[16][8];
   bool letter[8];
   int counter = 0;
-  for (int i = 0; i < messageLen; i++) {
+  int shifterMin = ((int)(x / 8));
+  int shifterMax = ((int)(x / 8));
+  if (shifterMax < messageLen) {
+    shifterMax++;
+  }
+  for (int i = shifterMin; i <= shifterMax; i++) {
     for (int j = 0; j < 8; j++) {
       int index = ((int)message[i]) - 48;
       convertCharToBool(pgm_read_word(&letters[index][j]), letter);
@@ -98,11 +103,9 @@ void mode_scavenger(uint8_t action) {
   }
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
-      if (marquee[i+x][j] && i+x < messageBits) {
+      if (marquee[i+(x%8)][j] && i+x < messageBits) {
         watch.drawPixel(i, j, 200);
-      } /*else {
-        std::cout << "_";
-      }*/
+      }
     }
   }  
   if (frame >= 8) {
