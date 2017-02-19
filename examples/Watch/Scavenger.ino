@@ -49,19 +49,24 @@ void convertCharToBool(unsigned char c, bool b[8])
     b[i] = (c & (1 << i)) != 0;
   }
 }
-
 static int x = 0;
-static int y = 0;
 static int frame = 0;
+const PROGMEM char string_0[] = "ABCDEFGHIJKLMN";   // "String 0" etc are strings to store - change to suit.
+const PROGMEM char string_1[] = "GARBAGE";
+PGM_P const string_table[] PROGMEM =
+{   
+  string_0,
+  string_1
+};
 
 void mode_scavenger(uint8_t action) {
-  char message[16] = "ABABABABAB";
+  char message[14];
+  strcpy_P(message, (char*)pgm_read_word(&(string_table[0])));
   int messageBits = strlen(message) * 8;
   int messageLen = strlen(message);
   if (action != ACTION_NONE) {
     // Reset our static variable to zero
     x = 0;
-    y = 0;
     frame = 0;
     watch.fillScreen(0);
     // If we got here either through someone holding left/right or
