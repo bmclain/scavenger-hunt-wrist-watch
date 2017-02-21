@@ -2,18 +2,10 @@
 INTERACTING WITH WATCH:
 - A button 'tap' is a quick press (a second or less).
 - A button 'hold' is a long press (1.5 seconds or longer).
-- Watch will usually start up in time-setting mode.
+- Watch will usually start up in welcome mode.
 
-TIME SET MODE:
-- Tap right button to increase value of current digit.
-- Tap left button to advance to next digit.
-- Hold both buttons to switch to time display mode.
-
-TIME DISPLAY MODE:
-- Hold left or right button to switch forward/back between clocks.
-- Some (but not all) clocks may use left or right button tap to
-  switch display format (e.g. date vs time).
-- Hold both buttons to switch to time set mode.
+Author: Brett McLain
+Copyright MIT License 2017
 */
 
 #include <avr/sleep.h>
@@ -81,21 +73,38 @@ void loop() {
       mode      = MODE_SCAVENGER;
     }
     numButtonPresses = 0;
-  } else if(a == ACTION_HOLD_RIGHT) {
+    memset(&buttonHistory[0], 0, sizeof(buttonHistory));
+  } else if (a == ACTION_HOLD_RIGHT && numButtonPresses < 5) {
     buttonHistory[numButtonPresses] = 'r';
     numButtonPresses++;
-  } else if(a == ACTION_HOLD_LEFT) {
+  } else if (a == ACTION_HOLD_LEFT && numButtonPresses < 5) {
     buttonHistory[numButtonPresses] = 'l';
     numButtonPresses++;
   }
-  if (strcmp(buttonHistory, "l") == 0) {
+  if (strcmp(buttonHistory, "llll") == 0) {
     messageIndex = 1;
-  } else if (strcmp(buttonHistory, "r") == 0) {
+  } else if (strcmp(buttonHistory, "rrrr") == 0) {
     messageIndex = 2;
-  } else if (strcmp(buttonHistory, "lrl") == 0) {
+  } else if (strcmp(buttonHistory, "rrrl") == 0) {
     messageIndex = 3;
-  } else if (strcmp(buttonHistory, "rlr") == 0) {
+  } else if (strcmp(buttonHistory, "rrll") == 0) {
     messageIndex = 4;
+  } else if (strcmp(buttonHistory, "rlll") == 0) {
+    messageIndex = 5;
+  } else if (strcmp(buttonHistory, "lllr") == 0) {
+    messageIndex = 6;
+  } else if (strcmp(buttonHistory, "llrr") == 0) {
+    messageIndex = 7;
+  } else if (strcmp(buttonHistory, "lrrr") == 0) {
+    messageIndex = 8;
+  } else if (strcmp(buttonHistory, "lrlr") == 0) {
+    messageIndex = 9;
+  } else if (strcmp(buttonHistory, "rlrl") == 0) {
+    messageIndex = 10;
+  } else if (strcmp(buttonHistory, "lrrl") == 0) {
+    messageIndex = 11;
+  } else if (strcmp(buttonHistory, "rllr") == 0) {
+    messageIndex = 12;
   }
   (*modeFunc[mode])(a); // Action is passed to clock-drawing function
   watch.swapBuffers();
