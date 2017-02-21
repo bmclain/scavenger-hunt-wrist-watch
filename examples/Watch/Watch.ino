@@ -81,6 +81,7 @@ void loop() {
     buttonHistory[numButtonPresses] = 'l';
     numButtonPresses++;
   }
+  uint8_t oldMessageIndex = messageIndex;
   if (strcmp(buttonHistory, "llll") == 0) {
     messageIndex = 1;
   } else if (strcmp(buttonHistory, "rrrr") == 0) {
@@ -105,6 +106,12 @@ void loop() {
     messageIndex = 11;
   } else if (strcmp(buttonHistory, "rllr") == 0) {
     messageIndex = 12;
+  } else if (strcmp(buttonHistory, "rrlr") == 0) {
+    messageIndex = 0;
+  }
+  if (oldMessageIndex != messageIndex) {
+    numButtonPresses = 0;
+    memset(&buttonHistory[0], 0, sizeof(buttonHistory));
   }
   (*modeFunc[mode])(a); // Action is passed to clock-drawing function
   watch.swapBuffers();
