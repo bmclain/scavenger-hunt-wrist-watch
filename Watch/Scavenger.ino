@@ -51,7 +51,7 @@ void convertCharToBool(unsigned char c, bool b[8])
 }
 static int x = 0;
 static int frame = 0;
-const PROGMEM char string_0[] = " IT EVENT 2017";   // "String 0" etc are strings to store - change to suit.
+const PROGMEM char string_0[] = " BRETTS DEVICE";   // "String 0" etc are strings to store - change to suit.
 const PROGMEM char string_1[] = " LOUIS RIEL";
 const PROGMEM char string_2[] = " TRANSPORTATION";
 const PROGMEM char string_3[] = " COPERNICUS";
